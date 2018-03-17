@@ -51,7 +51,7 @@ class ProductController extends Controller
         $product->save();
         return response([
             'data' => new ProductItem($product),
-        ], 201);
+        ]);
     }
 
     /**
@@ -85,7 +85,12 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        //
+        $request['detail'] = $request->description;
+        unset($request['description']);
+        $product->update($request->all());
+        return response([
+            'data' => new ProductItem($product),
+        ]);
     }
 
     /**
