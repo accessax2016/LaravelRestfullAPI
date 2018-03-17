@@ -7,6 +7,9 @@ use App\Http\Resources\Product\ProductItem;
 use App\Http\Resources\Product\ProductList;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
+use Auth;
+use Exception;
+use App\Exceptions\CheckOwner;
 
 class ProductController extends Controller
 {
@@ -85,6 +88,7 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
+        $this->CheckOwner($product);
         $request['detail'] = $request->description;
         unset($request['description']);
         $product->update($request->all());
@@ -103,5 +107,12 @@ class ProductController extends Controller
     {
         $product->delete();
         return response(null);
+    }
+
+    public function CheckOwner($product)
+    {
+        if (Auth::id() !== $product->user_id) {
+            throw new CheckOwner;
+        }
     }
 }
